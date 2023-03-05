@@ -15,9 +15,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
 
 //Peticiones
@@ -29,10 +26,12 @@ Route::get('/users/firmas', [\App\Http\Controllers\UsersController::class, 'peti
 Route::resource('peticiones', \App\Http\Controllers\PeticionesController::class);
 //JWT
 Route::controller(AuthController::class)->group(function () {
-    Route::post('login', 'login');
+    Route::post('login', 'login')->middleware("cors");
     Route::post('register', 'register');
     Route::post('logout', 'logout');
     Route::post('refresh', 'refresh');
     Route::get('me', 'me');
 });
+
+Route::get('/get-data','HomeController@getdata');
 
