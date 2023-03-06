@@ -81,14 +81,14 @@ class PeticionesController extends Controller
             return response()->json(['error' => $validator->errors()],
                 401);
         }
-        $validator = Validator::make($request->all(),
-            [
-                'file' => 'required|mimes:png,jpg|max:4096',
-            ]);
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()],
-                401);
-        }
+//        $validator = Validator::make($request->all(),
+//            [
+//                'file' => 'required|mimes:png,jpg|max:4096',
+//            ]);
+//        if ($validator->fails()) {
+//            return response()->json(['error' => $validator->errors()],
+//                401);
+//        }
         $input = $request->all();
         $category = Category::findOrFail($input['category']);
         $peticion = new Peticion($input);
