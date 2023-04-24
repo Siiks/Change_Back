@@ -22,7 +22,7 @@ Route::get('/peticiones/listado', [\App\Http\Controllers\PeticionesController::c
 Route::get('/peticiones/firmar/{id}', [\App\Http\Controllers\PeticionesController::class, 'firmar']);
 Route::post('/peticiones/add', [\App\Http\Controllers\PeticionesController::class, 'store']);
 Route::put('/peticiones/estado/{id}', [\App\Http\Controllers\PeticionesController::class, 'cambiarEstado']);
-Route::get('/mispeticiones/', [\App\Http\Controllers\PeticionesController::class, 'listMine']);
+Route::get('peticiones/mispeticiones/{id}', [\App\Http\Controllers\PeticionesController::class, 'listMine']);
 Route::get('/users/firmas', [\App\Http\Controllers\UsersController::class, 'peticionesFirmadas']);
 Route::resource('peticiones', \App\Http\Controllers\PeticionesController::class);
 //JWT

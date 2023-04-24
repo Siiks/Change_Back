@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Peticion;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -48,13 +49,13 @@ class PeticionesController extends Controller
         $peticiones = Peticion::all();
         return $peticiones;
     }
-    public function listMine(Request $request)
+    public function listMine(Request $request, $id)
     {
-// parent::index()
-        $user = Auth::user();
-        $id = 1;
-        $peticiones = Peticion::all()->where('user_id', $user->id);
-        return $peticiones;
+
+        $user = User::find($id);
+        $peticiones = $user->peticiones->toArray();
+        return response()->json($peticiones);
+        exit();
     }
     public function show(Request $request, $id)
     {
@@ -75,27 +76,27 @@ class PeticionesController extends Controller
                 'descripcion' => 'required',
                 'destinatario' => 'required',
                 'category' => 'required',
-//'file' => 'required',
+                'file' => 'required',
             ]);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()],
                 401);
         }
-//        $validator = Validator::make($request->all(),
-//            [
-//                'file' => 'required|mimes:png,jpg|max:4096',
-//            ]);
-//        if ($validator->fails()) {
-//            return response()->json(['error' => $validator->errors()],
-//                401);
-//        }
         $input = $request->all();
-        $category = Category::findOrFail($input['category']);
+        if ($file = $request->file('file')) {
+            $name = $file->getClientOriginalName();
+            $file->move('peticionesimgs/', $name);
+            $input['file'] = $name;
+        }
+
+        $categoria = Category::findOrFail($input['category']);
+        $user = Auth::user(); //asociarlo al usuario authenticado
         $peticion = new Peticion($input);
-        $peticion->category()->associate($category);
+        $peticion->user()->associate($user);
+        $peticion->category()->associate($categoria);
         $peticion->firmantes = 0;
         $peticion->estado = 'pendiente';
-        $peticion->user_id = Auth::user()->id;
+        $peticion->file = 'peticionesimgs/' . $input['file'];
         $peticion->save();
 
         return $peticion;
