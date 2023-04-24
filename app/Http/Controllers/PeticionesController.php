@@ -64,8 +64,26 @@ class PeticionesController extends Controller
     }
     public function update(Request $request, $id)
     {
+        $input = $request->all();
+        if ($file = $request->file('file')) {
+            $name = $file->getClientOriginalName();
+            $file->move('peticionesimgs/', $name);
+            $input['file'] = $name;
+        }
+
+        $categoria = Category::findOrFail($input['category']);
+        $user = Auth::user(); //asociarlo al usuario authenticado
         $peticion = Peticion::findOrFail($id);
-        $peticion->update($request->all());
+        $peticion->user()->associate($user);
+        $peticion->category()->associate($categoria);
+        $peticion->titulo = $input['titulo'];
+        $peticion->descripcion = $input['descripcion'];
+        $peticion->destinatario = $input['destinatario'];
+        $peticion->firmantes = 0;
+        $peticion->estado = 'pendiente';
+        $peticion->file = '';
+        $peticion->file = 'peticionesimgs/' . $input['file'];
+        $peticion->save();
         return $peticion;
     }
     public function store(Request $request)
@@ -86,7 +104,7 @@ class PeticionesController extends Controller
         if ($file = $request->file('file')) {
             $name = $file->getClientOriginalName();
             $file->move('peticionesimgs/', $name);
-            $input['file'] = $name;
+            $input['file'] =  $name;
         }
 
         $categoria = Category::findOrFail($input['category']);
@@ -138,7 +156,7 @@ class PeticionesController extends Controller
     {
         $peticion = Peticion::findOrFail($id);
         $peticion->delete();
-        return $peticion;
+        return response(["Message" => "La peticion no ha podido cambiar de estado"], 200);
     }
     function list(Request $request) {
         $peticiones = Peticion::jsonPaginate();

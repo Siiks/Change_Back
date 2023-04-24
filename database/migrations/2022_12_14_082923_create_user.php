@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('email');
             $table->string('avatar')->default('users/October2022/habitacion-doble.jpg');
             $table->string('password');
+            $table->integer('role')->default(2);
             $table->timestamps();
         });
     }
